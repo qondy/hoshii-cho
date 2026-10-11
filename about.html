@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ほしいもの帳 — 機能紹介</title>
+<meta name="description" content="欲しい物を一覧にして、値段・優先度・欲しい理由・買う場所のリンク・メモをまとめて残せるアプリ。気になる→買う予定→買った、の状態で整理し、買う予定の合計金額もひと目でわかります。">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:title" content="ほしいもの帳 — 機能紹介">
+<meta property="og:image" content="https://hoshii-cho.vercel.app/ogp.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --c1: #4f46e5;
+    --c2: #4338ca;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: #1a1a1a;
+    color: #ececec;
+    line-height: 1.7;
+  }
+  a { color: inherit; text-decoration: none; }
+  .topbar {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 24px 20px 0;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #9a9a9a;
+    transition: color .15s ease;
+  }
+  .back-link:hover { color: #fff; }
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--c1);
+    margin: 24px 20px 0;
+    border-radius: 24px;
+    padding: 64px 24px;
+    text-align: center;
+  }
+  .hero::before, .hero::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: #ffffff;
+    opacity: 0.07;
+    filter: blur(10px);
+  }
+  .hero::before { width: 240px; height: 240px; top: -80px; left: -60px; }
+  .hero::after { width: 300px; height: 300px; bottom: -120px; right: -80px; }
+  .badge {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--c1);
+    box-shadow: 0 0 0 14px rgba(255,255,255,0.14);
+  }
+  .category-pill {
+    position: relative;
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    position: relative;
+    margin: 0 0 12px;
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 800;
+    color: #fff;
+  }
+  .hero p.tagline {
+    position: relative;
+    margin: 0 auto 32px;
+    max-width: 520px;
+    font-size: 17px;
+    color: rgba(255,255,255,0.88);
+  }
+  .cta {
+    position: relative;
+    display: inline-block;
+    background: #fff;
+    color: #1a1a1a;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 14px 36px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transition: transform .15s ease;
+  }
+  .cta:hover { transform: translateY(-2px); }
+
+  .features {
+    max-width: 880px;
+    margin: 56px auto 0;
+    padding: 0 20px;
+  }
+  .features h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 24px;
+    color: #fff;
+  }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: #2a1d14;
+    border: 1px solid #45301f;
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .feature-icon {
+    color: var(--c1);
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  .feature-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: #fff;
+  }
+  .feature-desc {
+    font-size: 14px;
+    color: #dac6b8;
+    margin: 0;
+  }
+
+  .steps {
+    max-width: 880px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+  }
+  .steps h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0 0 20px;
+    color: #fff;
+  }
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-top: 1px solid #3d2a1c;
+  }
+  .step:first-of-type { border-top: 0; }
+  .step-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--c1);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step p { margin: 0; font-size: 14px; color: #ecdcd0; }
+  .step strong { color: #fff; }
+  code {
+    background: rgba(255,255,255,0.1);
+    color: #ffe7a3;
+    border-radius: 4px;
+    padding: 0 4px;
+    font-size: 0.95em;
+  }
+
+  .note {
+    max-width: 880px;
+    margin: 24px auto 0;
+    padding: 0 20px;
+    font-size: 13px;
+    color: #ad9483;
+  }
+
+  .footer-cta {
+    max-width: 880px;
+    margin: 56px auto 0;
+    padding: 0 20px 64px;
+    text-align: center;
+  }
+  .footer-cta .cta {
+    background: var(--c1);
+    color: #fff;
+    box-shadow: none;
+  }
+  .footer-links {
+    margin-top: 20px;
+    font-size: 13px;
+    color: #ad9483;
+  }
+  .footer-links a { color: #9a9a9a; }
+  .footer-links a:hover { color: #fff; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="back-link" href="https://apps.yuji-nakamura.com/">← アプリ一覧に戻る</a>
+  </div>
+
+  <section class="hero">
+    <span class="category-pill">暮らし</span>
+    <div class="badge"><svg width="72" height="72" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 26 H54 V35 H10 Z"/><path d="M14 35 V54 H50 V35"/><path d="M32 26 V54"/><path d="M32 26 C26 26 19 24 18 18 C17 12 24 10 28 14 C31 17 32 26 32 26 Z"/><path d="M32 26 C38 26 45 24 46 18 C47 12 40 10 36 14 C33 17 32 26 32 26 Z"/></svg></div>
+    <h1>ほしいもの帳</h1>
+    <p class="tagline">欲しい物を、ひとつずつ見える化。値段も理由もメモも残して、買う前にじっくり見比べられる、小さなほしいもの帳です。</p>
+    <a class="cta" href="https://hoshii-cho.vercel.app">アプリを使ってみる →</a>
+  </section>
+
+  <section class="features">
+    <h2>できること</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22 C8 19 10 17 13 17 H21 L25 11 H39 L43 17 H51 C54 17 56 19 56 22 V48 C56 51 54 53 51 53 H13 C10 53 8 51 8 48 Z"/><circle cx="32" cy="34" r="10"/></svg></div>
+        <h3 class="feature-title">写真つきで一覧に並べる</h3>
+        <p class="feature-desc">欲しい物の写真を1枚登録できます。正方形の枠で位置と大きさを選んで切り抜くので、一覧がカード状にきれいにそろいます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30 L30 10 H52 V32 L32 52 Z"/><circle cx="42" cy="20" r="3"/></svg></div>
+        <h3 class="feature-title">値段と合計金額</h3>
+        <p class="feature-desc">欲しい物ごとに値段を登録。一覧の上に「買う予定の合計」と「気になるも含めた合計」が表示されるので、いくら必要かがすぐわかります。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8 L39.5 24 L57 26.2 L44.2 38.2 L47.6 55.5 L32 47 L16.4 55.5 L19.8 38.2 L7 26.2 L24.5 24 Z"/></svg></div>
+        <h3 class="feature-title">優先度（3段階）</h3>
+        <p class="feature-desc">「いつか」「ほしい」「絶対ほしい」の3段階で優先度を付けられます。優先度が高い順に並べれば、本当に欲しい物から検討できます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="32" r="5"/><circle cx="32" cy="32" r="5"/><circle cx="50" cy="32" r="5"/><path d="M19 32 H27"/><path d="M37 32 H45"/></svg></div>
+        <h3 class="feature-title">状態で整理</h3>
+        <p class="feature-desc">「気になる → 買う予定 → 買った」の流れで管理。買わないと決めた物は「やめた」に移して記録に残せます。一覧は「検討中」で見るのが基本です。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 10 H42 L52 20 V54 H14 Z"/><path d="M42 10 V20 H52"/><path d="M22 32 H44"/><path d="M22 42 H38"/></svg></div>
+        <h3 class="feature-title">理由とメモを残す</h3>
+        <p class="feature-desc">「なぜ欲しいのか」の理由と、サイズ・色・型番・比較した物などの自由メモをそれぞれ記録。あとで見直したときに判断しやすくなります。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M28 36 C31 40 37 40 40 37 L50 27 C53 24 53 18 50 15 C47 12 41 12 38 15 L34 19"/><path d="M36 28 C33 24 27 24 24 27 L14 37 C11 40 11 46 14 49 C17 52 23 52 26 49 L30 45"/></svg></div>
+        <h3 class="feature-title">買う場所のリンク</h3>
+        <p class="feature-desc">買いたいお店や参考ページのURLを3件まで登録。詳細画面からワンタップで開けます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20 C10 17 12 15 15 15 H27 L32 20 H49 C52 20 54 22 54 25 V46 C54 49 52 51 49 51 H15 C12 51 10 49 10 46 Z"/></svg></div>
+        <h3 class="feature-title">カテゴリで分類</h3>
+        <p class="feature-desc">ガジェット・キッチン・本などのカテゴリで整理。カテゴリは自由に追加・名前変更・削除でき、一覧の上でタップして絞り込めます。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="28" cy="28" r="16"/><path d="M40 40 L54 54"/></svg></div>
+        <h3 class="feature-title">検索と並び替え</h3>
+        <p class="feature-desc">名前・理由・メモをまとめて検索。登録が新しい順・優先度・値段・「欲しい歴が長い順」で並び替えられます。欲しいと思ってから何日たったかも表示され、頭を冷やす目安になります。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg width="30" height="30" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="12" width="36" height="26" rx="3"/><path d="M18 46 H34"/><rect x="40" y="26" width="16" height="26" rx="3"/></svg></div>
+        <h3 class="feature-title">スマホとPCで同じ帳面</h3>
+        <p class="feature-desc">Googleでログインすると、データはあなた専用の領域に保存され、スマホでもPCでも同じ内容を見られます。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="steps">
+    <h2>使い方</h2>
+    <div class="step">
+      <span class="step-num">1</span>
+      <p><strong>Googleでログイン</strong>：データはあなた専用の領域に保存されます。</p>
+    </div>
+    <div class="step">
+      <span class="step-num">2</span>
+      <p><strong>欲しい物を登録</strong>：「欲しい物を登録」から名前・値段・優先度・写真を入力。まずは「サンプルを2つ入れてみる」で雰囲気を確かめるのもおすすめです。</p>
+    </div>
+    <div class="step">
+      <span class="step-num">3</span>
+      <p><strong>理由とリンクを残す</strong>：欲しい理由、買う場所のリンク、サイズや色などのメモを書いておきます。</p>
+    </div>
+    <div class="step">
+      <span class="step-num">4</span>
+      <p><strong>状態を進める</strong>：買うと決めたら「買う予定」、買えたら「買った」、見送るなら「やめた」。詳細画面のボタンでその場で切り替えられます。</p>
+    </div>
+    <div class="step">
+      <span class="step-num">5</span>
+      <p><strong>合計金額で見直す</strong>：一覧上の合計金額と「欲しい歴」を見て、本当に今買うべきか見直してみましょう。</p>
+    </div>
+  </section>
+
+  <p class="note">※ 写真は正方形に切り抜いたうえで、保存前にお使いの端末で縮小されます（約200KB以下）。購入ページそのものの取得や価格の自動更新には対応していないため、値段は手入力です。</p>
+
+  <section class="footer-cta">
+    <a class="cta" href="https://hoshii-cho.vercel.app">今すぐ使ってみる →</a>
+    <p class="footer-links"><a href="https://apps.yuji-nakamura.com/">他のアプリも見る</a></p>
+  </section>
+</body>
+</html>
