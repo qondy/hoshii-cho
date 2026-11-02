@@ -11,6 +11,9 @@ import {
 } from './store';
 import { Category, Item, ItemData, LinkItem, Priority, Status } from './types';
 import { closeOverlay, iconEl, openOverlay, showToast, textEl } from './ui';
+import { initClickTracking, track } from './analytics';
+
+initClickTracking();
 
 // ============================================================
 // 固定アイコン（開発者定義のSVGのみ。ユーザー入力は含めない）
@@ -823,11 +826,19 @@ async function saveEditor(e: Event): Promise<void> {
     if (existing) {
       await updateItem(currentUser.uid, existing.id, data, editorPhotosChanged ? editorPhotos : null);
       if (editorPhotosChanged && detailId === existing.id) detailPhotos = [...editorPhotos];
+      track('item_update', { status: data.status });
       closeEditor();
       showToast('保存しました');
     } else {
       const photos = [...editorPhotos];
       const id = await createItem(currentUser.uid, data, photos);
+      track('item_create', {
+        status: data.status,
+        priority: data.priority,
+        link_count: data.links.length,
+        photo_count: photos.length,
+        has_memo: data.memo ? 1 : 0,
+      });
       closeEditor();
       showToast('登録しました');
       // 登録した欲しい物の詳細をそのまま開く（写真は手元のものを使う）
@@ -988,6 +999,7 @@ async function addSamples(): Promise<void> {
         [],
       );
     }
+    track('sample_add');
     showToast('サンプルを追加しました');
   } catch {
     showToast('追加に失敗しました');
@@ -1058,6 +1070,7 @@ function bindEvents(): void {
     loginBusy = true;
     try {
       await loginWithGoogle();
+      track('login', { method: 'google' });
     } catch (err) {
       const code = (err as { code?: string }).code;
       if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
@@ -1104,6 +1117,7 @@ function bindEvents(): void {
     askConfirm('欲しい物を削除しますか？', `「${item.name}」と、写真・理由・メモをすべて削除します。元に戻せません。`, async () => {
       if (!currentUser) return;
       await deleteItem(currentUser.uid, item.id);
+      track('item_delete');
       closeDetail();
       showToast('削除しました');
     });
