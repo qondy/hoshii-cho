@@ -6,12 +6,13 @@ import { loadImage, processPhoto, thumbFromDataUrl } from './image';
 import { SAMPLE_ITEMS } from './samples';
 import {
   createCategory, createItem, deleteCategory, deleteItem, ensureDefaultCategories, loadPhotos,
-  MAX_CATEGORIES, MAX_LINKS, MAX_PHOTOS, MAX_PRICE, renameCategory,
-  safeUrl, subscribeCategories, subscribeItems, updateItem, updateQuick,
+  MAX_CATEGORIES, MAX_LINKS, MAX_MEMO, MAX_PHOTOS, MAX_PRICE, MAX_REASON, renameCategory,
+  safeUrl, subscribeCategories, subscribeItems, updateItem, updateQuick, updateText,
 } from './store';
 import { Category, Item, ItemData, LinkItem, Priority, Status } from './types';
 import { closeOverlay, iconEl, openOverlay, showToast, textEl } from './ui';
 import { initClickTracking, track } from './analytics';
+import { initTextareas, InlineEditController, makeInlineEditable } from './memo-ui';
 
 initClickTracking();
 
@@ -422,6 +423,7 @@ async function fetchDetailPhotos(id: string): Promise<void> {
 
 function closeDetail(): void {
   detailId = null;
+  detailTextCtl.forEach((ctl) => ctl.reset());
   detailPhotos = [];
   detailPhotoToken++;
   closeOverlay(detailOverlay);
@@ -462,6 +464,34 @@ async function setQuick(itemId: string, patch: { status?: Status; priority?: Pri
     quickBusy.delete(itemId);
     if (btn) btn.disabled = false;
   }
+}
+
+// 詳細画面の「欲しい理由」「メモ」はタップするとその場で編集できる
+const detailTextCtl = new Map<string, InlineEditController>();
+
+function bindDetailText(field: 'reason' | 'memo', box: HTMLElement, emptyLabel: string): void {
+  const existing = detailTextCtl.get(field);
+  if (existing) {
+    existing.refresh();
+    return;
+  }
+  detailTextCtl.set(
+    field,
+    makeInlineEditable(box, {
+      maxLength: field === 'reason' ? MAX_REASON : MAX_MEMO,
+      placeholder: field === 'reason' ? '例：通勤電車で音楽に集中したい' : '例：カラーはブラック。ケース付きのモデルを選ぶ。',
+      emptyLabel,
+      getText: () => findItem(detailId)?.[field] ?? '',
+      save: async (text) => {
+        const id = detailId;
+        if (!currentUser || !id) throw new Error('not ready');
+        await updateText(currentUser.uid, id, { [field]: text });
+        track('item_text_edit', { field });
+        showToast('保存しました');
+      },
+      onError: () => showToast('保存に失敗しました。通信環境を確認してください'),
+    }),
+  );
 }
 
 function renderDetail(): void {
@@ -512,8 +542,6 @@ function renderDetail(): void {
   if (item.buyBy) dates.push(`買う予定日：${formatDate(item.buyBy)}`);
   $('detail-dates').textContent = dates.join(' ／ ');
 
-  $('detail-reason').textContent = item.reason;
-  $('detail-reason-section').classList.toggle('hidden', !item.reason);
 
   // リンク
   const links = $<HTMLUListElement>('detail-links');
@@ -540,8 +568,8 @@ function renderDetail(): void {
     links.append(li);
   });
 
-  $('detail-memo').textContent = item.memo;
-  $('detail-memo-section').classList.toggle('hidden', !item.memo);
+  bindDetailText('reason', $('detail-reason'), '＋ 欲しい理由を書く');
+  bindDetailText('memo', $('detail-memo'), '＋ メモを追加');
 }
 
 // ============================================================
@@ -1206,3 +1234,5 @@ onAuthChange((user) => {
     endSession();
   }
 });
+
+initTextareas();

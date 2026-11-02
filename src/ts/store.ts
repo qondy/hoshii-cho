@@ -156,6 +156,14 @@ export function updateQuick(uid: string, id: string, patch: { status?: Status; p
   return updateDoc(itemDoc(uid, id), data);
 }
 
+/** 欲しい理由・メモだけをその場で保存する（詳細画面のタップ編集用） */
+export function updateText(uid: string, id: string, patch: { reason?: string; memo?: string }): Promise<void> {
+  const data: Record<string, unknown> = { updatedAt: Date.now() };
+  if (patch.reason !== undefined) data.reason = patch.reason.trim().slice(0, MAX_REASON);
+  if (patch.memo !== undefined) data.memo = patch.memo.slice(0, MAX_MEMO);
+  return updateDoc(itemDoc(uid, id), data);
+}
+
 export async function deleteItem(uid: string, id: string): Promise<void> {
   const batch = writeBatch(db);
   batch.delete(itemDoc(uid, id));
